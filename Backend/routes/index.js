@@ -42,6 +42,7 @@ router.post('/category-Product',getCategoryWiseProduct)
 router.post('/product-details',getProductDetailsController)
 router.get("/search",searchProduct)
 router.post("/filter-product",filterProductController)
+router.get('/get',getCategoryProduct)
 //  user add to cart 
 router.post('/addtocart',authToken,addToCartController)
 router.get('/countAddToCartProduct',authToken,countAddToCartProduct)
