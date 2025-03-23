@@ -36,7 +36,8 @@ try {
 
        const tokenOption= {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite:'None'
        }
           res.cookie("token",token,tokenOption).status(200).json({
             message:"login successfully",
