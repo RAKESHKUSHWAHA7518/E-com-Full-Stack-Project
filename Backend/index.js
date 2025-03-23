@@ -38,7 +38,8 @@ const router = require('./routes')
 
 const app = express()
 app.use(cors({
-    origin : process.env.FRONTEND_URL,
+    // origin :process.env.FRONTEND_URL,
+    origin :"https://e-com-full-stack-project-9jpg.vercel.app",
     credentials : true
 }))
 app.use(express.json())
