@@ -1,0 +1,29 @@
+ .userTable th{
+ @apply border text-base font-medium
+ }
+
+
+ .userTable{
+    @apply bg-white 
+ }
+
+ .userTable td{
+    @apply border text-base text-center 
+    }
+
+    .container {
+      scrollbar-width: thin; /* For Firefox */
+    }
+    
+    .container::-webkit-scrollbar {
+      height: 8px; /* Height for horizontal scrollbar */
+    }
+    
+    .container::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 10px;
+    }
+ 
+    .scrollbar-none::-webkit-scrollbar{
+      display: none;
+  }
