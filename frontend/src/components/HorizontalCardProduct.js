@@ -1308,7 +1308,7 @@ const HorizontalCardProduct = ({ category, heading }) => {
   const [quickViewProduct, setQuickViewProduct] = useState(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const loadingList = new Array(6).fill(null)
-
+  const [isTouch, setIsTouch] = useState(false)
   const scrollElement = useRef()
   const { fetchUserAddToCart } = useContext(Context)
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 })
@@ -1317,6 +1317,13 @@ const HorizontalCardProduct = ({ category, heading }) => {
   const totalPages =
     visibleItemCount > 0 ? Math.ceil(data.length / visibleItemCount) : 0
 
+
+    useEffect(() => {
+      setIsTouch(
+        typeof window !== 'undefined' &&
+        ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+      )
+    }, [])
   const getBorderStyle = (index) =>
     gradientBorders[index % gradientBorders.length]
 
@@ -1523,8 +1530,14 @@ const HorizontalCardProduct = ({ category, heading }) => {
         <motion.div
           className="flex items-center gap-4 md:gap-6 overflow-x-auto scrollbar-none pb-6"
           ref={scrollElement}
-          drag="x"
+          // drag="x"
+          drag={isTouch ? false : 'x'}
           dragConstraints={{ left: 0, right: 0 }}
+          // dragConstraints={{ left: 0, right: 0 }}
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-x',
+          }}
           variants={containerVariants}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
