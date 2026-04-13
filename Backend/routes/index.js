@@ -24,6 +24,11 @@ const deleteAddToCartProduct = require('../controller/user/deleteAddToCartProduc
 const searchProduct = require('../controller/product/searchProduct')
 const filterProductController = require('../controller/product/filterProduct')
 
+// Payment and Order controllers
+const { createCheckoutSessionController, checkoutSuccess, checkoutCancel } = require('../controller/payment/checkoutController')
+const { handleStripeWebhook } = require('../controller/payment/webhookController')
+const { getUserOrders, getAllOrders, getOrderById } = require('../controller/order/orderController')
+
 router.post('/signup',userSignUpController)
 
 router.post('/signin',userSignInController)
@@ -49,5 +54,15 @@ router.get('/countAddToCartProduct',authToken,countAddToCartProduct)
 router.get("/view-card-product",authToken,addToCartViewProduct)
 router.post("/update-cart-product",authToken,updateAddToCartProduct)
 router.post("/delete-cart-product",authToken,deleteAddToCartProduct)
+
+// Payment routes
+router.post('/checkout/create-session', authToken, createCheckoutSessionController)
+router.get('/checkout/success', authToken, checkoutSuccess)
+router.get('/checkout/cancel', authToken, checkoutCancel)
+
+// Order routes
+router.get('/orders/user', authToken, getUserOrders)
+router.get('/orders/all', authToken, getAllOrders)
+router.get('/orders/:orderId', authToken, getOrderById)
 
 module.exports = router

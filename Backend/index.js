@@ -34,6 +34,7 @@ const cookieParser = require('cookie-parser')
 require('dotenv').config()
 const connectDB = require('./config/db')
 const router = require('./routes')
+const { handleStripeWebhook } = require('./controller/payment/webhookController')
 
 
 const app = express()
@@ -41,6 +42,10 @@ app.use(cors({
     origin : process.env.FRONTEND_URL,
     credentials : true
 }))
+
+// Webhook route MUST come before express.json() to preserve raw body
+app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), handleStripeWebhook)
+
 app.use(express.json())
 app.use(cookieParser())
 

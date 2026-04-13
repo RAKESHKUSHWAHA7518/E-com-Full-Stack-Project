@@ -87,6 +87,32 @@ const SummaryApi= {
     filterProduct : {
         url : `${backenddomain}/api/filter-product`,
         method : 'post'
+    },
+    // Payment endpoints
+    createCheckoutSession: {
+        url: `${backenddomain}/api/checkout/create-session`,
+        method: 'POST'
+    },
+    checkoutSuccess: {
+        url: `${backenddomain}/api/checkout/success`,
+        method: 'GET'
+    },
+    checkoutCancel: {
+        url: `${backenddomain}/api/checkout/cancel`,
+        method: 'GET'
+    },
+    // Order endpoints
+    getUserOrders: {
+        url: `${backenddomain}/api/orders/user`,
+        method: 'GET'
+    },
+    getAllOrders: {
+        url: `${backenddomain}/api/orders/all`,
+        method: 'GET'
+    },
+    getOrderById: {
+        url: `${backenddomain}/api/orders/:orderId`,
+        method: 'GET'
     }
    
 

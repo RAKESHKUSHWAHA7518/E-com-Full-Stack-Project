@@ -3,6 +3,7 @@ import SummaryApi from '../common'
 import Context from '../context'
 import displayINRCurrency from '../helpers/displayCurrency'
 import { MdDelete } from "react-icons/md";
+import { toast } from 'react-toastify';
 
 const Cart = () => {
     const [data,setData] = useState([])
@@ -117,6 +118,30 @@ const Cart = () => {
 
     const totalQty = data.reduce((previousValue,currentValue)=> previousValue + currentValue.quantity,0)
     const totalPrice = data.reduce((preve,curr)=> preve + (curr.quantity * curr?.productId?.sellingPrice) ,0)
+
+    const handlePayment = async () => {
+        try {
+            const response = await fetch(SummaryApi.createCheckoutSession.url, {
+                method: SummaryApi.createCheckoutSession.method,
+                credentials: 'include',
+                headers: {
+                    'content-type': 'application/json'
+                }
+            })
+
+            const responseData = await response.json()
+
+            if (responseData.success && responseData.sessionUrl) {
+                // Redirect to Stripe Checkout
+                window.location.href = responseData.sessionUrl
+            } else {
+                toast.error(responseData.message || 'Failed to initiate payment')
+            }
+        } catch (error) {
+            toast.error('Something went wrong. Please try again.')
+            console.error('Payment error:', error)
+        }
+    }
   return (
     <div className='container mx-auto'>
         
@@ -193,7 +218,7 @@ const Cart = () => {
                                         <p>{displayINRCurrency(totalPrice)}</p>    
                                     </div>
 
-                                    <button className='bg-blue-600 p-2 text-white w-full mt-2'>Payment</button>
+                                    <button className='bg-blue-600 p-2 text-white w-full mt-2' onClick={handlePayment}>Payment</button>
 
                                 </div>
                             )

@@ -18,6 +18,10 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "stripe": "^22.0.1"
+  },
+  "devDependencies": {
+    "fast-check": "^4.6.0"
   }
 }
