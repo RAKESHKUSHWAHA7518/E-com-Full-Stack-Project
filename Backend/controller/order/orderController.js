@@ -47,7 +47,7 @@ async function getAllOrders(req, res) {
 
     // Verify user is admin
     const user = await userModel.findById(userId);
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || user.role !== 'SUPERADMIN') {
       return res.status(403).json({
         success: false,
         error: true,

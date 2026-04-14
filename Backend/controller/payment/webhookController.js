@@ -134,14 +134,15 @@ async function handleCheckoutSessionCompleted(session) {
       });
     }
 
-    // Create order
+    // Create order - set to 'paid' directly since checkout.session.completed
+    // only fires after Stripe confirms payment is successful
     const order = new orderModel({
       userId,
       paymentIntentId,
       stripeSessionId: session.id,
       products: orderProducts,
       totalAmount,
-      status: 'pending', // Will be updated by payment_intent.succeeded
+      status: 'paid',
       paymentGateway: 'stripe',
       customerEmail: session.metadata.customerEmail || session.customer_email,
       customerName: session.metadata.customerName

@@ -46,6 +46,7 @@ import ROLE from '../common/role';
             <nav className='grid'>
               <Link to={'all-users'} className='p-2 py-1 hover:bg-slate-100'>All User</Link>
               <Link to={'all-product'} className='p-2 py-1  hover:bg-slate-100'>All Product</Link>
+               <Link to={'orders'} className='p-2 py-1  hover:bg-slate-100'>Orders</Link>
               
             </nav>
 
