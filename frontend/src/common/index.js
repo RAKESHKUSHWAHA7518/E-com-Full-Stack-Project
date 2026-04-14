@@ -53,7 +53,7 @@ const SummaryApi= {
     },
 
     productDetails:{
-        url:`${backenddomain}/api/product-details `,
+        url:`${backenddomain}/api/product-details`,
         method:"post"
 
     },
@@ -113,6 +113,27 @@ const SummaryApi= {
     getOrderById: {
         url: `${backenddomain}/api/orders/:orderId`,
         method: 'GET'
+    },
+    // Review endpoints
+    getProductReviews: {
+        url: `${backenddomain}/api/reviews/:productId`,
+        method: 'GET'
+    },
+    createReview: {
+        url: `${backenddomain}/api/reviews`,
+        method: 'POST'
+    },
+    updateReview: {
+        url: `${backenddomain}/api/reviews/:reviewId`,
+        method: 'PUT'
+    },
+    deleteReview: {
+        url: `${backenddomain}/api/reviews/:reviewId`,
+        method: 'DELETE'
+    },
+    toggleHelpfulVote: {
+        url: `${backenddomain}/api/reviews/:reviewId/helpful`,
+        method: 'POST'
     }
    
 

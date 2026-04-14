@@ -15,6 +15,7 @@ import CheckoutSuccess from "../pages/CheckoutSuccess";
 import CheckoutCancel from "../pages/CheckoutCancel";
 import OrderHistory from "../pages/OrderHistory";
 import AdminOrders from "../pages/AdminOrders";
+import AdminReviews from "../pages/AdminReviews";
 
   const router = createBrowserRouter([
     {
@@ -82,6 +83,10 @@ import AdminOrders from "../pages/AdminOrders";
                     {
                         path:'orders',
                         element:<AdminOrders/>
+                    },
+                    {
+                        path:'reviews',
+                        element:<AdminReviews/>
                     }
                 ]
             }

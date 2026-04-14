@@ -28,6 +28,10 @@ const filterProductController = require('../controller/product/filterProduct')
 const { createCheckoutSessionController, checkoutSuccess, checkoutCancel } = require('../controller/payment/checkoutController')
 const { handleStripeWebhook } = require('../controller/payment/webhookController')
 const { getUserOrders, getAllOrders, getOrderById } = require('../controller/order/orderController')
+const { checkPurchase } = require('../controller/order/checkPurchaseController')
+
+// Review controller
+const { createReview, getProductReviews, updateReview, deleteReview, toggleHelpfulVote } = require('../controller/review/reviewController')
 
 router.post('/signup',userSignUpController)
 
@@ -63,6 +67,14 @@ router.get('/checkout/cancel', authToken, checkoutCancel)
 // Order routes
 router.get('/orders/user', authToken, getUserOrders)
 router.get('/orders/all', authToken, getAllOrders)
+router.get('/orders/check-purchase/:productId', authToken, checkPurchase)
 router.get('/orders/:orderId', authToken, getOrderById)
+
+// Review routes
+router.post('/reviews', authToken, createReview)
+router.get('/reviews/:productId', getProductReviews)
+router.put('/reviews/:reviewId', authToken, updateReview)
+router.delete('/reviews/:reviewId', authToken, deleteReview)
+router.post('/reviews/:reviewId/helpful', authToken, toggleHelpfulVote)
 
 module.exports = router

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserOrders } from '../store/orderSlice';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 const OrderHistory = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,8 @@ const OrderHistory = () => {
     );
   }
 
+  console.log(userOrders);
+  
   return (
     <div className="container mx-auto p-4 min-h-screen">
       <div className="max-w-6xl mx-auto">
@@ -103,7 +106,11 @@ const OrderHistory = () => {
                 {/* Order Products */}
                 <div className="space-y-3 mb-4">
                   {order.products.map((product, index) => (
-                    <div key={index} className="flex items-center gap-4">
+                    <Link
+                      key={index}
+                      to={`/product/${product.productId._id}`}
+                      className="flex items-center gap-4 hover:bg-gray-50 rounded-lg p-2 -mx-2 transition-colors cursor-pointer"
+                    >
                       <div className="w-16 h-16 bg-gray-100 rounded flex-shrink-0">
                         {product.productImage ? (
                           <img
@@ -124,8 +131,9 @@ const OrderHistory = () => {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-800">{product.productName}</p>
+                        <p className="font-medium text-gray-800 hover:text-blue-600">{product.productName}</p>
                         <p className="text-sm text-gray-500">Quantity: {product.quantity}</p>
+                        <p className="text-xs text-blue-500 mt-1">Click to view & review →</p>
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-gray-800">
@@ -133,7 +141,7 @@ const OrderHistory = () => {
                         </p>
                         <p className="text-sm text-gray-500">${product.price.toFixed(2)} each</p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
 

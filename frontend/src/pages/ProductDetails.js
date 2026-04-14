@@ -5,10 +5,11 @@ import { FaStar } from "react-icons/fa";
 import { FaStarHalf } from "react-icons/fa";
 import displayINRCurrency from '../helpers/displayCurrency';
 import VerticalCardProduct from '../components/VerticalCardProduct';
-// import CategroyWiseProductDisplay from '../components/CategoryWiseProductDisplay';
 import addToCart from '../helpers/addToCart';
 import Context from '../context';
 import CategroyWiseProductDisplay from '../components/CategroyWiseProductDisplay';
+import ReviewList from '../components/reviews/ReviewList';
+import StarRating from '../components/reviews/StarRating';
 
 const ProductDetails = () => {
   const [data,setData] = useState({
@@ -49,10 +50,11 @@ const ProductDetails = () => {
     setLoading(false)
     const dataReponse = await response.json()
     console.log("data product",dataReponse);
-    
 
-    setData(dataReponse?.data)
-    setActiveImage(dataReponse?.data?.productImage[0])
+    if(dataReponse?.data) {
+      setData(dataReponse.data)
+      setActiveImage(dataReponse.data?.productImage[0])
+    }
 
   }
 
@@ -60,7 +62,7 @@ const ProductDetails = () => {
 
   useEffect(()=>{
     fetchProductDetails()
-  },[params])
+  },[params?.id])
 
   const handleMouseEnterProduct = (imageURL)=>{
     setActiveImage(imageURL)
@@ -194,16 +196,16 @@ const ProductDetails = () => {
                 <p className='capitalize text-slate-400'>{data?.category}</p>
 
                 <div className='text-red-600 flex items-center gap-1'>
-                    <FaStar/>
-                    <FaStar/>
-                    <FaStar/>
-                    <FaStar/>
-                    <FaStarHalf/>
+                    <StarRating
+                      rating={data?.averageRating || 0}
+                      count={data?.reviewCount || 0}
+                      size="md"
+                    />
                 </div>
 
                 <div className='flex items-center gap-2 text-2xl lg:text-3xl font-medium my-1'>
-                  <p className='text-red-600'>{displayINRCurrency(data.sellingPrice)}</p>
-                  <p className='text-slate-400 line-through'>{displayINRCurrency(data.price)}</p>
+                  <p className='text-red-600'>{displayINRCurrency(data?.sellingPrice)}</p>
+                  <p className='text-slate-400 line-through'>{displayINRCurrency(data?.price)}</p>
                 </div>
 
                 <div className='flex items-center gap-3 my-2'>
@@ -228,6 +230,9 @@ const ProductDetails = () => {
           <CategroyWiseProductDisplay category={data?.category} heading={"Recommended Product"}/>
         )
       }
+
+      {/* Reviews Section */}
+      {data?._id && <ReviewList productId={data._id} />}
      
 
 

@@ -4,6 +4,7 @@ import displayINRCurrency from '../helpers/displayCurrency'
 import Context from '../context'
 import addToCart from '../helpers/addToCart'
 import { Link } from 'react-router-dom'
+import StarRating from './reviews/StarRating'
 
 const VerticalCard = ({loading,data = []}) => {
     const loadingList = new Array(13).fill(null)
@@ -46,6 +47,9 @@ const VerticalCard = ({loading,data = []}) => {
                          <div className='p-4 grid gap-3'>
                              <h2 className='font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black'>{product?.productName}</h2>
                              <p className='capitalize text-slate-500'>{product?.category}</p>
+                             {product?.reviewCount > 0 && (
+                               <StarRating rating={product?.averageRating || 0} count={product?.reviewCount || 0} size="sm" />
+                             )}
                              <div className='flex gap-3'>
                                  <p className='text-red-600 font-medium'>{ displayINRCurrency(product?.sellingPrice) }</p>
                                  <p className='text-slate-500 line-through'>{ displayINRCurrency(product?.price)  }</p>

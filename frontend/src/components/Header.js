@@ -123,13 +123,10 @@ const Header = () => {
             {
               (user?.role === ROLE.ADMIN || user?.role === ROLE.SUPERADMIN) &&(
                 <Link to ={'/admin-panel/all-users'} className='whitespace-nowrap hover:bg-slate-100 p-2 hidden md:block' onClick={()=>setMenuDisplay(preve=>!preve)}>Admin Panel</Link>
-         
-
               )
             }
-
-            
-            </nav>
+            <Link to={'/orders'} className='whitespace-nowrap hover:bg-slate-100 p-2 block' onClick={()=>setMenuDisplay(preve=>!preve)}>My Orders</Link>
+          </nav>
          </div>
 
           )
