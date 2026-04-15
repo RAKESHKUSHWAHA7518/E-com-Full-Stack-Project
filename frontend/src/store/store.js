@@ -4,12 +4,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import paymentReducer from './paymentSlice'
 import orderReducer from './orderSlice'
 import reviewReducer from './reviewSlice'
+import wishlistReducer from './wishlistSlice'
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     payment: paymentReducer,
     order: orderReducer,
-    review: reviewReducer
+    review: reviewReducer,
+    wishlist: wishlistReducer
   },
 })

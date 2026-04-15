@@ -48,6 +48,7 @@ import ROLE from '../common/role';
               <Link to={'all-product'} className='p-2 py-1  hover:bg-slate-100'>All Product</Link>
               <Link to={'orders'} className='p-2 py-1  hover:bg-slate-100'>Orders</Link>
               <Link to={'reviews'} className='p-2 py-1  hover:bg-slate-100'>Reviews</Link>
+              <Link to={'wishlist-analytics'} className='p-2 py-1 hover:bg-slate-100'>Wishlist Analytics</Link>
             </nav>
 
           </div>

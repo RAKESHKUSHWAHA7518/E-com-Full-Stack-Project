@@ -3,34 +3,32 @@ const  jwt = require('jsonwebtoken')
 
 async function authToken (req, res, next) {
     try {
-        const token = req.cookies?.token ||req.headers?.cookie.split("token=")[1];
-       
+        const cookieHeader = req.headers?.cookie || ''
+        const tokenFromCookie = cookieHeader.includes('token=')
+            ? cookieHeader.split('token=')[1]?.split(';')[0]
+            : undefined
+        const token = req.cookies?.token || tokenFromCookie
 
-        console.log(token);
         if(!token){
             return res.status(200).json({
-                message: " User Not login",
+                message: "User Not login",
                 error:true,
                 success:false
             })
-          }
+        }
 
-        jwt.verify(token,process.env.TOKEN_SECRET_KEY, function(err, decoded) {
-          
-          console.log(err);
-          console.log(decoded);
-
-          if(err){
-            console.log("Error auth",err);
-          } 
-
-          req.userId= decoded?._id
-
-          next()
-
-          
-             
-          });
+        jwt.verify(token, process.env.TOKEN_SECRET_KEY, function(err, decoded) {
+            if(err){
+                console.log("Auth error:", err.message)
+                return res.status(200).json({
+                    message: "Session expired, please login again",
+                    error: true,
+                    success: false
+                })
+            }
+            req.userId = decoded?._id
+            next()
+        })
           
          
 

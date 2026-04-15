@@ -3,6 +3,7 @@ import Logo from './Logo'
 import { GoSearch } from "react-icons/go";
 import { FaUserCircle  } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
+import { FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SummaryApi from '../common';
@@ -12,6 +13,7 @@ import { store } from '../store/store';
 import ROLE from '../common/role';
 import Context from '../context';
 import {   useLocation,  } from 'react-router-dom';
+import { selectWishlistCount } from '../store/wishlistSlice';
 
 const Header = () => {
 
@@ -20,6 +22,7 @@ const Header = () => {
   const navigate =useNavigate()
 
   const user =useSelector(state=>state?.user?.user)
+  const wishlistCount = useSelector(selectWishlistCount)
 
   const [menuDisplay,setMenuDisplay] = useState(false)
   const searchInput = useLocation()
@@ -133,6 +136,20 @@ const Header = () => {
          }
          
       </div>
+
+      {
+      user?._id &&(
+        <Link to={"/wishlist"} className='text-2xl relative'>
+          <div className='text-3xl cursor-pointer relative'>
+            <FaHeart className='text-gray-500 hover:text-red-500 transition-colors'/>
+            {wishlistCount > 0 && (
+              <div className='p-1 text-white w-5 h-5 flex items-center bg-red-500 rounded-full justify-center absolute -top-2 -right-3'>
+                <p className='text-sm'>{wishlistCount}</p>
+              </div>
+            )}
+          </div>
+        </Link>
+      )}
 
       {
       user?._id &&(

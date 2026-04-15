@@ -16,6 +16,8 @@ import CheckoutCancel from "../pages/CheckoutCancel";
 import OrderHistory from "../pages/OrderHistory";
 import AdminOrders from "../pages/AdminOrders";
 import AdminReviews from "../pages/AdminReviews";
+import WishlistPage from "../pages/WishlistPage";
+import AdminWishlistAnalytics from "../pages/AdminWishlistAnalytics";
 
   const router = createBrowserRouter([
     {
@@ -68,6 +70,10 @@ import AdminReviews from "../pages/AdminReviews";
                 element: <ProductDetails/>
             },
             {
+                path: 'wishlist',
+                element: <WishlistPage/>
+            },
+            {
                 path:'admin-panel',
                 element:<Adminpanel/>,
                 children:[
@@ -87,6 +93,10 @@ import AdminReviews from "../pages/AdminReviews";
                     {
                         path:'reviews',
                         element:<AdminReviews/>
+                    },
+                    {
+                        path:'wishlist-analytics',
+                        element:<AdminWishlistAnalytics/>
                     }
                 ]
             }

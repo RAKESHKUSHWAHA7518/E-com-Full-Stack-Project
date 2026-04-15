@@ -33,6 +33,9 @@ const { checkPurchase } = require('../controller/order/checkPurchaseController')
 // Review controller
 const { createReview, getProductReviews, updateReview, deleteReview, toggleHelpfulVote } = require('../controller/review/reviewController')
 
+// Wishlist controller
+const { toggleWishlist, getUserWishlist, getWishlistAnalytics } = require('../controller/wishlist/wishlistController')
+
 router.post('/signup',userSignUpController)
 
 router.post('/signin',userSignInController)
@@ -76,5 +79,10 @@ router.get('/reviews/:productId', getProductReviews)
 router.put('/reviews/:reviewId', authToken, updateReview)
 router.delete('/reviews/:reviewId', authToken, deleteReview)
 router.post('/reviews/:reviewId/helpful', authToken, toggleHelpfulVote)
+
+// Wishlist routes
+router.post('/wishlist/toggle', authToken, toggleWishlist)
+router.get('/wishlist', authToken, getUserWishlist)
+router.get('/wishlist/analytics', authToken, getWishlistAnalytics)
 
 module.exports = router

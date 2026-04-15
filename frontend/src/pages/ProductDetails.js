@@ -10,6 +10,7 @@ import Context from '../context';
 import CategroyWiseProductDisplay from '../components/CategroyWiseProductDisplay';
 import ReviewList from '../components/reviews/ReviewList';
 import StarRating from '../components/reviews/StarRating';
+import HeartButton from '../components/HeartButton';
 
 const ProductDetails = () => {
   const [data,setData] = useState({
@@ -211,6 +212,7 @@ const ProductDetails = () => {
                 <div className='flex items-center gap-3 my-2'>
                   <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[120px] text-red-600 font-medium hover:bg-red-600 hover:text-white' onClick={(e)=>handleBuyProduct(e,data?._id)}>Buy</button>
                   <button className='border-2 border-red-600 rounded px-3 py-1 min-w-[120px] font-medium text-white bg-red-600 hover:text-red-600 hover:bg-white' onClick={(e)=>handleAddToCart(e,data?._id)}>Add To Cart</button>
+                  <HeartButton productId={data?._id} showLabel={true} />
                 </div>
 
                 <div>

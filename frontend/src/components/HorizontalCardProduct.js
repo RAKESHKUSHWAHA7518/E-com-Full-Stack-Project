@@ -1278,6 +1278,7 @@ import addToCart from '../helpers/addToCart'
 import Context from '../context'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import HeartButton from './HeartButton'
 
 const containerVariants = {
   hidden: {},
@@ -1567,18 +1568,12 @@ const HorizontalCardProduct = ({ category, heading }) => {
                             NEW
                           </div>
                         )}
-                        <motion.button
-                          className="absolute top-2 right-2 bg-white rounded-full p-2 z-10"
-                          onClick={e => toggleWishlist(e, product._id)}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                        <div
+                          className="absolute top-2 right-2 z-10"
+                          onClick={e => e.stopPropagation()}
                         >
-                          {wishlist[product._id] ? (
-                            <FaHeart className="text-red-500" />
-                          ) : (
-                            <FaRegHeart />
-                          )}
-                        </motion.button>
+                          <HeartButton productId={product._id} />
+                        </div>
                         <Link to={`/product/${product._id}`}>
                           <motion.img
                             src={product.productImage[0]}

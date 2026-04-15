@@ -11,6 +11,7 @@ import SummaryApi from './common';
 import Context from './context';
 import { useDispatch } from 'react-redux';
 import { setUserDetails } from './store/userSlice';
+import { fetchWishlist } from './store/wishlistSlice';
  
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
 
     if(dataApi.success){
       dispatch(setUserDetails(dataApi.data))
-
+      dispatch(fetchWishlist())
     }
     console.log(dataResponse);
     console.log(dataApi);

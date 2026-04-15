@@ -134,10 +134,20 @@ const SummaryApi= {
     toggleHelpfulVote: {
         url: `${backenddomain}/api/reviews/:reviewId/helpful`,
         method: 'POST'
+    },
+    // Wishlist endpoints
+    wishlistToggle: {
+        url: `${backenddomain}/api/wishlist/toggle`,
+        method: 'POST'
+    },
+    wishlistGet: {
+        url: `${backenddomain}/api/wishlist`,
+        method: 'GET'
+    },
+    wishlistAnalytics: {
+        url: `${backenddomain}/api/wishlist/analytics`,
+        method: 'GET'
     }
-   
-
-
 }
 
 export default SummaryApi
