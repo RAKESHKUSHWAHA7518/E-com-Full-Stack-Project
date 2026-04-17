@@ -4,9 +4,10 @@ import SummaryApi from '../common/index';
 // Async thunk to fetch user orders
 export const fetchUserOrders = createAsyncThunk(
   'order/fetchUserOrders',
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10 } = {}, { rejectWithValue }) => {
     try {
-      const response = await fetch(SummaryApi.getUserOrders.url, {
+      const url = `${SummaryApi.getUserOrders.url}?page=${page}&limit=${limit}`;
+      const response = await fetch(url, {
         method: SummaryApi.getUserOrders.method,
         credentials: 'include',
         headers: {
@@ -20,7 +21,7 @@ export const fetchUserOrders = createAsyncThunk(
         return rejectWithValue(data.message || 'Failed to fetch orders');
       }
 
-      return data.data;
+      return data;
     } catch (error) {
       return rejectWithValue(error.message || 'Network error');
     }
@@ -95,6 +96,8 @@ const orderSlice = createSlice({
     userOrders: [],
     allOrders: [],
     currentOrder: null,
+    selectedOrder: null,
+    pagination: { page: 1, totalPages: 1, total: 0 },
     loading: false,
     error: null
   },
@@ -103,7 +106,11 @@ const orderSlice = createSlice({
       state.userOrders = [];
       state.allOrders = [];
       state.currentOrder = null;
+      state.selectedOrder = null;
       state.error = null;
+    },
+    clearSelectedOrder: (state) => {
+      state.selectedOrder = null;
     }
   },
   extraReducers: (builder) => {
@@ -115,7 +122,12 @@ const orderSlice = createSlice({
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.userOrders = action.payload;
+        state.userOrders = action.payload.data;
+        state.pagination = {
+          page: action.payload.page ?? 1,
+          totalPages: action.payload.totalPages ?? 1,
+          total: action.payload.total ?? 0
+        };
         state.error = null;
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
@@ -144,6 +156,7 @@ const orderSlice = createSlice({
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.loading = false;
         state.currentOrder = action.payload;
+        state.selectedOrder = action.payload;
         state.error = null;
       })
       .addCase(fetchOrderById.rejected, (state, action) => {
@@ -153,5 +166,5 @@ const orderSlice = createSlice({
   }
 });
 
-export const { clearOrders } = orderSlice.actions;
+export const { clearOrders, clearSelectedOrder } = orderSlice.actions;
 export default orderSlice.reducer;

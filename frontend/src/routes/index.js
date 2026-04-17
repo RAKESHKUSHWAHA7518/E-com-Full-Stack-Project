@@ -18,6 +18,8 @@ import AdminOrders from "../pages/AdminOrders";
 import AdminReviews from "../pages/AdminReviews";
 import WishlistPage from "../pages/WishlistPage";
 import AdminWishlistAnalytics from "../pages/AdminWishlistAnalytics";
+import ProfilePage from "../pages/ProfilePage";
+import OrderDetailPage from "../pages/OrderDetailPage";
 
   const router = createBrowserRouter([
     {
@@ -72,6 +74,14 @@ import AdminWishlistAnalytics from "../pages/AdminWishlistAnalytics";
             {
                 path: 'wishlist',
                 element: <WishlistPage/>
+            },
+            {
+                path: 'profile',
+                element: <ProfilePage/>
+            },
+            {
+                path: 'orders/:orderId',
+                element: <OrderDetailPage/>
             },
             {
                 path:'admin-panel',

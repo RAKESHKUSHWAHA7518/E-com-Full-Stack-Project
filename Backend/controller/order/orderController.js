@@ -2,24 +2,37 @@ const orderModel = require('../../models/orderModel');
 const userModel = require('../../models/userModel');
 
 /**
- * Get orders for authenticated user
+ * Get orders for authenticated user with pagination
  */
 async function getUserOrders(req, res) {
   try {
     const userId = req.userId; // From authToken middleware
 
-    // Query orders by userId, sort by creation date descending
-    const orders = await orderModel
-      .find({ userId })
-      .sort({ createdAt: -1 })
-      .populate('products.productId', 'productName brandName category')
-      .lean();
+    // Parse and validate pagination params
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(10, Math.max(1, parseInt(req.query.limit) || 10));
+    const skip = (page - 1) * limit;
+
+    // Get total count and paginated orders in parallel
+    const [total, orders] = await Promise.all([
+      orderModel.countDocuments({ userId }),
+      orderModel
+        .find({ userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('products.productId', 'productName brandName category')
+        .lean()
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
 
     return res.status(200).json({
       success: true,
-      error: false,
       data: orders,
-      count: orders.length
+      total,
+      page,
+      totalPages
     });
 
   } catch (error) {
@@ -160,8 +173,78 @@ async function getOrderById(req, res) {
   }
 }
 
+const VALID_DELIVERY_STATUSES = ['processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+
+/**
+ * Update delivery status for an order (admin only)
+ */
+async function updateDeliveryStatus(req, res) {
+  try {
+    const { orderId } = req.params;
+    const { deliveryStatus } = req.body;
+    const userId = req.userId;
+
+    // Validate deliveryStatus value
+    if (!deliveryStatus || !VALID_DELIVERY_STATUSES.includes(deliveryStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: `deliveryStatus must be one of: ${VALID_DELIVERY_STATUSES.join(', ')}`
+      });
+    }
+
+    // Verify requesting user is an admin
+    const user = await userModel.findById(userId);
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPERADMIN')) {
+      return res.status(403).json({
+        success: false,
+        error: true,
+        message: 'Access denied. Administrator privileges required.'
+      });
+    }
+
+    // Update the order
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      {
+        deliveryStatus,
+        deliveryStatusUpdatedAt: new Date()
+      },
+      { new: true, runValidators: true }
+    ).lean();
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: 'Order not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: updatedOrder
+    });
+
+  } catch (error) {
+    console.error('Error updating delivery status:', {
+      orderId: req.params.orderId,
+      userId: req.userId,
+      error: error.message,
+      stack: error.stack
+    });
+
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: 'Unable to update delivery status. Please try again later.'
+    });
+  }
+}
+
 module.exports = {
   getUserOrders,
   getAllOrders,
-  getOrderById
+  getOrderById,
+  updateDeliveryStatus
 };

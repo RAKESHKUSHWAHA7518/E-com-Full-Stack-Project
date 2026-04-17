@@ -1,10 +1,11 @@
 
 import { configureStore } from '@reduxjs/toolkit'
- import userReducer from'./userSlice'
+import userReducer from './userSlice'
 import paymentReducer from './paymentSlice'
 import orderReducer from './orderSlice'
 import reviewReducer from './reviewSlice'
 import wishlistReducer from './wishlistSlice'
+import addressReducer from './addressSlice'
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     payment: paymentReducer,
     order: orderReducer,
     review: reviewReducer,
-    wishlist: wishlistReducer
+    wishlist: wishlistReducer,
+    address: addressReducer
   },
 })

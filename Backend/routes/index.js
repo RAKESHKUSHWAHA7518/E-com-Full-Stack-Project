@@ -27,7 +27,7 @@ const filterProductController = require('../controller/product/filterProduct')
 // Payment and Order controllers
 const { createCheckoutSessionController, checkoutSuccess, checkoutCancel } = require('../controller/payment/checkoutController')
 const { handleStripeWebhook } = require('../controller/payment/webhookController')
-const { getUserOrders, getAllOrders, getOrderById } = require('../controller/order/orderController')
+const { getUserOrders, getAllOrders, getOrderById, updateDeliveryStatus } = require('../controller/order/orderController')
 const { checkPurchase } = require('../controller/order/checkPurchaseController')
 
 // Review controller
@@ -35,6 +35,12 @@ const { createReview, getProductReviews, updateReview, deleteReview, toggleHelpf
 
 // Wishlist controller
 const { toggleWishlist, getUserWishlist, getWishlistAnalytics } = require('../controller/wishlist/wishlistController')
+
+// Profile controller
+const { getProfile, updateProfile, uploadProfilePic } = require('../controller/user/profileController')
+
+// Address controller
+const { getAddresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = require('../controller/user/addressController')
 
 router.post('/signup',userSignUpController)
 
@@ -84,5 +90,20 @@ router.post('/reviews/:reviewId/helpful', authToken, toggleHelpfulVote)
 router.post('/wishlist/toggle', authToken, toggleWishlist)
 router.get('/wishlist', authToken, getUserWishlist)
 router.get('/wishlist/analytics', authToken, getWishlistAnalytics)
+
+// Profile routes
+router.get('/profile', authToken, getProfile)
+router.put('/profile', authToken, updateProfile)
+router.post('/profile/upload-pic', authToken, uploadProfilePic)
+
+// Address routes
+router.get('/addresses', authToken, getAddresses)
+router.post('/addresses', authToken, addAddress)
+router.put('/addresses/:addressId', authToken, updateAddress)
+router.delete('/addresses/:addressId', authToken, deleteAddress)
+router.put('/addresses/:addressId/default', authToken, setDefaultAddress)
+
+// Delivery status route
+router.put('/orders/:orderId/delivery-status', authToken, updateDeliveryStatus)
 
 module.exports = router

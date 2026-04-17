@@ -147,6 +147,45 @@ const SummaryApi= {
     wishlistAnalytics: {
         url: `${backenddomain}/api/wishlist/analytics`,
         method: 'GET'
+    },
+    // Profile endpoints
+    getProfile: {
+        url: `${backenddomain}/api/profile`,
+        method: 'GET'
+    },
+    updateProfile: {
+        url: `${backenddomain}/api/profile`,
+        method: 'PUT'
+    },
+    uploadProfilePic: {
+        url: `${backenddomain}/api/profile/upload-pic`,
+        method: 'POST'
+    },
+    // Address endpoints
+    getAddresses: {
+        url: `${backenddomain}/api/addresses`,
+        method: 'GET'
+    },
+    addAddress: {
+        url: `${backenddomain}/api/addresses`,
+        method: 'POST'
+    },
+    updateAddress: {
+        url: `${backenddomain}/api/addresses`,  // append /:addressId when calling
+        method: 'PUT'
+    },
+    deleteAddress: {
+        url: `${backenddomain}/api/addresses`,  // append /:addressId when calling
+        method: 'DELETE'
+    },
+    setDefaultAddress: {
+        url: `${backenddomain}/api/addresses`,  // append /:addressId/default when calling
+        method: 'PUT'
+    },
+    // Delivery status endpoint
+    updateDeliveryStatus: {
+        url: `${backenddomain}/api/orders`,     // append /:orderId/delivery-status when calling
+        method: 'PUT'
     }
 }
 

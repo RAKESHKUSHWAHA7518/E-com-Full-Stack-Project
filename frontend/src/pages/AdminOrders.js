@@ -3,6 +3,50 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllOrders } from '../store/orderSlice';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import SummaryApi from '../common';
+
+const DELIVERY_STATUSES = ['processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+
+const DeliveryStatusUpdater = ({ order, onUpdated }) => {
+  const [updating, setUpdating] = useState(false);
+
+  const handleChange = async (e) => {
+    const newStatus = e.target.value;
+    setUpdating(true);
+    try {
+      const res = await fetch(`${SummaryApi.updateDeliveryStatus.url}/${order._id}/delivery-status`, {
+        method: SummaryApi.updateDeliveryStatus.method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deliveryStatus: newStatus }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Delivery status updated to "${newStatus}"`);
+        onUpdated();
+      } else {
+        toast.error(data.message || 'Failed to update delivery status');
+      }
+    } catch (err) {
+      toast.error('Network error');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  return (
+    <select
+      value={order.deliveryStatus || 'processing'}
+      onChange={handleChange}
+      disabled={updating}
+      className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-red-400 disabled:opacity-50"
+    >
+      {DELIVERY_STATUSES.map(s => (
+        <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+      ))}
+    </select>
+  );
+};
 
 const AdminOrders = () => {
   const dispatch = useDispatch();
@@ -157,6 +201,9 @@ const AdminOrders = () => {
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Delivery Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Items
                     </th>
                   </tr>
@@ -194,6 +241,9 @@ const AdminOrders = () => {
                         >
                           {order.status.toUpperCase()}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <DeliveryStatusUpdater order={order} onUpdated={loadOrders} />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {order.products.length} item(s)

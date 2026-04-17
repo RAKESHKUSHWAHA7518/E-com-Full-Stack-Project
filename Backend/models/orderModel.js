@@ -67,6 +67,26 @@ const orderSchema = new mongoose.Schema({
   customerName: {
     type: String,
     required: true
+  },
+  deliveryStatus: {
+    type: String,
+    enum: ['processing', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'],
+    default: 'processing',
+    index: true
+  },
+  deliveryStatusUpdatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  shippingAddress: {
+    fullName: { type: String },
+    addressLine1: { type: String },
+    addressLine2: { type: String },
+    city: { type: String },
+    state: { type: String },
+    postalCode: { type: String },
+    country: { type: String },
+    phone: { type: String }
   }
 }, {
   timestamps: true
