@@ -1,32 +1,4 @@
- 
-//  const express =require('express')
 
-//  const cors= require('cors')
-
-//  require('dotenv').config()
-
-//   const connectDB =require('./config/db.js')
-
-//   const router= require('./routes/index.js')
-
-//   const cookieParser = require('cookie-parser')
-//    const FRONTEND_URL="http://localhost:3000"
-//  const app = express()
-//  app.use(cors({
-//     origin:FRONTEND_URL,
-//     credentials:true,
-//  }))
-//  app.use(express.json())
-//  app.use('/api',router)
-//  app.use(cookieParser());
-
-//  const PORT = 8080 || process.env.PORT
-
-//  connectDB().then(()=>{
-//     app.listen(PORT,()=>{
-//         console.log('listening on port')
-//      })
-//  })
 
 const express = require('express')
 const cors = require('cors')
@@ -39,24 +11,24 @@ const { handleStripeWebhook } = require('./controller/payment/webhookController'
 
 const app = express()
 app.use(cors({
-    origin : process.env.FRONTEND_URL,
-    credentials : true
+    origin: process.env.FRONTEND_URL,
+    credentials: true
 }))
 
 // Webhook route MUST come before express.json() to preserve raw body
-app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), handleStripeWebhook)
+app.post('/api/webhook/stripe', express.raw({ type: 'application/json' }), handleStripeWebhook)
 
 app.use(express.json())
 app.use(cookieParser())
 
-app.use("/api",router)
+app.use("/api", router)
 
 const PORT = 8080 || process.env.PORT
 
 
-connectDB().then(()=>{
-    app.listen(PORT,()=>{
+connectDB().then(() => {
+    app.listen(PORT, () => {
         console.log("connnect to DB")
-        console.log("Server is running "+PORT)
+        console.log("Server is running " + PORT)
     })
 })
