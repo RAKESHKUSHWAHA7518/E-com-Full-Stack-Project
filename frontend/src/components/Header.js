@@ -1,332 +1,203 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Logo from './Logo'
 import { GoSearch } from "react-icons/go";
-import { FaUserCircle  } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { FaHeart } from "react-icons/fa";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import SummaryApi from '../common';
 import { toast } from 'react-toastify';
 import { setUserDetails } from '../store/userSlice';
-import { store } from '../store/store';
 import ROLE from '../common/role';
 import Context from '../context';
-import {   useLocation,  } from 'react-router-dom';
 import { selectWishlistCount } from '../store/wishlistSlice';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const user = useSelector(state => state?.user?.user)
+    const wishlistCount = useSelector(selectWishlistCount)
+    const context = useContext(Context)
 
-  const dispatch= useDispatch()
+    const [menuDisplay, setMenuDisplay] = useState(false)
+    const [search, setSearch] = useState("")
 
-  const navigate =useNavigate()
+    // Sync search input with URL
+    useEffect(() => {
+        const URLSearch = new URLSearchParams(location.search)
+        const searchQuery = URLSearch.get("q")
+        if (searchQuery) setSearch(searchQuery)
+    }, [location.search])
 
-  const user =useSelector(state=>state?.user?.user)
-  const wishlistCount = useSelector(selectWishlistCount)
-
-  const [menuDisplay,setMenuDisplay] = useState(false)
-  const searchInput = useLocation()
-  const URLSearch = new URLSearchParams(searchInput?.search)
-  const context =useContext(Context)
-  const searchQuery = URLSearch.getAll("q")
-  const [search,setSearch] = useState(searchQuery)
-
-  console.log("user",user);
-
-  const handleLogout= async()=>{
-    const fetchData = await fetch(SummaryApi.logout_user.url,{
-      method: SummaryApi.logout_user.method,
-      credentials:'include'
-    })
-
-    const data = await fetchData.json();
-
-    console.log(data);
-
-    if(data.success){
-      toast.success(data.message)
-      navigate('/login')
-
-      dispatch(setUserDetails(null))
-
+    const handleLogout = async () => {
+        const fetchData = await fetch(SummaryApi.logout_user.url, {
+            method: SummaryApi.logout_user.method,
+            credentials: 'include'
+        })
+        const data = await fetchData.json();
+        if (data.success) {
+            toast.success(data.message)
+            dispatch(setUserDetails(null))
+            navigate('/login')
+        }
+        if (data.error) {
+            toast.error(data.message)
+        }
     }
 
-    if(data.error){
-      toast.error(data.message)
+    const handleSearch = (e) => {
+        const { value } = e.target
+        setSearch(value)
+        if (value) {
+            navigate(`/search?q=${value}`)
+        } else {
+            navigate("/search")
+        }
     }
 
-   
+    return (
+        <header className='h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 fixed w-full z-40 transition-all duration-300 shadow-sm'>
+            <div className='h-full flex items-center px-4 md:px-8 container mx-auto justify-between gap-4'>
+                <div className='flex items-center shrink-0'>
+                    <Link to={"/"} className='flex items-center'>
+                        <Logo w={110} h={55} />
+                    </Link>
+                </div>
 
-  }
+                {/* Desktop Search Bar */}
+                <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className='hidden md:flex items-center w-full max-w-sm border border-slate-300 rounded-full focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100 transition-all bg-slate-50 overflow-hidden group h-10'
+                >
+                    <input
+                        type='text'
+                        placeholder='Search for products...'
+                        className='w-full outline-none bg-transparent text-slate-700 placeholder:text-slate-400 text-sm px-4 h-full'
+                        onChange={handleSearch}
+                        value={search}
+                    />
+                    <div
+                        className='w-12 h-full bg-red-600 flex items-center justify-center text-white cursor-pointer hover:bg-red-700 transition-colors'
+                    >
+                        <GoSearch size={18} />
+                    </div>
+                </motion.div>
 
- console.log(context);
+                <div className='flex items-center gap-4 md:gap-7'>
+                    {/* User Profile / Admin Menu */}
+                    <div className='relative flex items-center justify-center'>
+                        {user?._id && (
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className='text-3xl cursor-pointer rounded-full transition-all focus-within:ring-2 focus-within:ring-red-500'
+                                onClick={() => setMenuDisplay(prev => !prev)}
+                            >
+                                {user?.profilePic ? (
+                                    <img src={user?.profilePic} className='w-9 h-9 rounded-full object-cover border border-slate-200' alt={user?.name} />
+                                ) : (
+                                    <FaUserCircle className='text-slate-500' />
+                                )}
+                            </motion.div>
+                        )}
 
- const handleSearch = (e)=>{
-  const { value } = e.target
-  setSearch(value)
+                        <AnimatePresence>
+                            {menuDisplay && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    className='absolute bg-white top-full mt-3 right-0 h-fit shadow-xl rounded-xl p-2 min-w-[170px] border border-slate-100 z-50'
+                                >
+                                    <nav className='flex flex-col gap-0.5'>
+                                        {(user?.role === ROLE.ADMIN || user?.role === ROLE.SUPERADMIN) && (
+                                            <Link to={'/admin-panel/all-users'} className='whitespace-nowrap hover:bg-slate-50 hover:text-red-500 p-2.5 rounded-lg transition-all hidden md:block text-xs font-bold text-slate-700' onClick={() => setMenuDisplay(false)}>
+                                                Admin Panel
+                                            </Link>
+                                        )}
+                                        <Link to={'/orders'} className='whitespace-nowrap hover:bg-slate-50 hover:text-red-500 p-2.5 rounded-lg transition-all block text-xs font-bold text-slate-700' onClick={() => setMenuDisplay(false)}>
+                                            My Orders
+                                        </Link>
+                                        <Link to={'/profile'} className='whitespace-nowrap hover:bg-slate-50 hover:text-red-500 p-2.5 rounded-lg transition-all block text-xs font-bold text-slate-700' onClick={() => setMenuDisplay(false)}>
+                                            My Profile
+                                        </Link>
+                                    </nav>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
-  if(value){
-    navigate(`/search?q=${value}`)
-  }else{
-    navigate("/search")
-  }
-}
- 
+                    {/* Wishlist */}
+                    {user?._id && (
+                        <Link to={"/wishlist"} className='relative flex items-center'>
+                            <motion.div
+                                whileHover={{ scale: 1.1, color: "#f43f5e" }}
+                                className='text-xl cursor-pointer text-slate-500 transition-colors'
+                            >
+                                <FaHeart />
+                                {wishlistCount > 0 && (
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className='p-1 text-white w-4 h-4 flex items-center bg-red-600 rounded-full justify-center absolute -top-1.5 -right-2 ring-1 ring-white'
+                                    >
+                                        <p className='text-[8px] font-bold'>{wishlistCount}</p>
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        </Link>
+                    )}
 
-  return (
-    <header className='h-16 shadow-md bg-white fixed w-full z-40'>
-      <div className='h-full flex items-center px-4  container mx-auto justify-between'>
-        <div className=''>
-         <Link to={"/"}> <Logo w={90} h={50}/></Link>
-        </div>
+                    {/* Cart */}
+                    {user?._id && (
+                        <Link to={"/cart"} className='relative flex items-center'>
+                            <motion.div
+                                whileHover={{ scale: 1.1, color: "#ef4444" }}
+                                className='text-xl cursor-pointer text-slate-700'
+                            >
+                                <FaCartShopping />
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className='p-1 text-white w-4 h-4 flex items-center bg-red-600 rounded-full justify-center absolute -top-1.5 -right-2 ring-1 ring-white'
+                                >
+                                    <p className='text-[8px] font-bold'>{context?.cartProductCount}</p>
+                                </motion.div>
+                            </motion.div>
+                        </Link>
+                    )}
 
-        {/* <div className=' hidden  md:flex   w-full justify-between max-w-sm items-center  border rounded-full pl-2 focus-within:shadow'>
-         <input className='w-full outline-none ' type='text' placeholder='user search item'/>
-         <div className='text-lg w-13 px-4 h-7 bg-red-500 flex items-center rounded-r-full'>
-         <GoSearch />
-         </div>
-      </div> */}
-
-<div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2'>
-                <input type='text' placeholder='search product here...' className='w-full outline-none' onChange={handleSearch} value={search}/>
-                <div className='text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white'>
-                  <GoSearch />
+                    {/* Login/Logout Button */}
+                    <div className='flex items-center'>
+                        {user?._id ? (
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={handleLogout}
+                                className='px-5 py-1.5 rounded-full bg-red-600 text-white font-bold text-sm shadow-md hover:bg-red-700 transition-all'
+                            >
+                                Logout
+                            </motion.button>
+                        ) : (
+                            <Link to={"/login"}>
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className='px-6 py-1.5 rounded-full bg-red-600 text-white font-bold text-sm shadow-lg shadow-red-500/10 hover:bg-red-700 transition-all'
+                                >
+                                    Login
+                                </motion.button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
-
-      <div className='flex items-center  gap-6'>
-
-     <div className='relative group flex justify-center'>
-
-      {
-
-        user?._id && (
-
-          <div className='text-3xl   cursor-pointer    ' onClick={()=>setMenuDisplay(preve=>!preve)}>
-
-         {
-          user?.profilePic ? (
-            <img src= {user?.profilePic} className='w-10 rounded-full h-10' alt={user?.name}/>
-          ): (
-            <FaUserCircle />
-
-          )
-        }
-      
-         </div>
-
-        )
-      }
-        
-         {
-          menuDisplay && (
-
-            <div className=' absolute bg-white bottom-0 top-11 h-fit shadow-lg p-2'>
-          <nav>
-            {
-              (user?.role === ROLE.ADMIN || user?.role === ROLE.SUPERADMIN) &&(
-                <Link to ={'/admin-panel/all-users'} className='whitespace-nowrap hover:bg-slate-100 p-2 hidden md:block' onClick={()=>setMenuDisplay(preve=>!preve)}>Admin Panel</Link>
-              )
-            }
-            <Link to={'/orders'} className='whitespace-nowrap hover:bg-slate-100 p-2 block' onClick={()=>setMenuDisplay(preve=>!preve)}>My Orders</Link>
-            <Link to={'/profile'} className='whitespace-nowrap hover:bg-slate-100 p-2 block' onClick={()=>setMenuDisplay(preve=>!preve)}>My Profile</Link>
-          </nav>
-         </div>
-
-          )
-         }
-         
-      </div>
-
-      {
-      user?._id &&(
-        <Link to={"/wishlist"} className='text-2xl relative'>
-          <div className='text-3xl cursor-pointer relative'>
-            <FaHeart className='text-gray-500 hover:text-red-500 transition-colors'/>
-            {wishlistCount > 0 && (
-              <div className='p-1 text-white w-5 h-5 flex items-center bg-red-500 rounded-full justify-center absolute -top-2 -right-3'>
-                <p className='text-sm'>{wishlistCount}</p>
-              </div>
-            )}
-          </div>
-        </Link>
-      )}
-
-      {
-      user?._id &&(
-        <Link to={"/cart"} className='text-2xl relative'>
-        <div className='text-3xl cursor-pointer relative'>
-        <span> <FaCartShopping /></span>
-        
-        <div className=' p-1 text-white   w-5  h-5 flex items-center bg-red-500 rounded-full justify-center absolute  -top-2   -right-3'>
-         <p className='text-sm' >{context?.cartProductCount}</p>
-        </div>
-         </div>
-         </Link>
-      )
-     }
-
-     
-       <div>
-
-        {
-          user?._id?(
-            <button onClick={handleLogout} className='px-3 py-1 rounded-full bg-rose-500 hover:bg-red-600'>Logout</button>
-          ):(
-            // <button className='px-3 py-1 rounded-full bg-rose-500 hover:bg-red-600'>LogIn</button>
-            <Link to={"login"}> <button className='px-3 py-1 rounded-full bg-rose-500 hover:bg-red-600'> Login</button></Link>
-      
-          )
-        }
-        </div>
-      </div>
-
-      </div>
-     
-    </header>
-  )
+        </header>
+    )
 }
 
 export default Header
-
-// import React, { useContext, useState } from 'react'
-// import Logo from './Logo'
-// import { GrSearch } from "react-icons/gr";
-// import { FaRegCircleUser } from "react-icons/fa6";
-// import { FaShoppingCart } from "react-icons/fa";
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
-// import SummaryApi from '../common';
-// import { toast } from 'react-toastify'
-// import { setUserDetails } from '../store/userSlice';
-// import ROLE from '../common/role';
-// import Context from '../context';
-
-// const Header = () => {
-//   const user = useSelector(state => state?.user?.user)
-//   const dispatch = useDispatch()
-//   const [menuDisplay,setMenuDisplay] = useState(false)
-//   const context = useContext(Context)
-//   const navigate = useNavigate()
-//   const searchInput = useLocation()
-//   const URLSearch = new URLSearchParams(searchInput?.search)
-//   const searchQuery = URLSearch.getAll("q")
-//   const [search,setSearch] = useState(searchQuery)
-
-//   const handleLogout = async() => {
-//     const fetchData = await fetch(SummaryApi.logout_user.url,{
-//       method : SummaryApi.logout_user.method,
-//       credentials : 'include'
-//     })
-
-//     const data = await fetchData.json()
-
-//     if(data.success){
-//       toast.success(data.message)
-//       dispatch(setUserDetails(null))
-//       navigate("/")
-//     }
-
-//     if(data.error){
-//       toast.error(data.message)
-//     }
-
-//   }
-
-//   const handleSearch = (e)=>{
-//     const { value } = e.target
-//     setSearch(value)
-
-//     if(value){
-//       navigate(`/search?q=${value}`)
-//     }else{
-//       navigate("/search")
-//     }
-//   }
-//   return (
-//     <header className='h-16 shadow-md bg-white fixed w-full z-40'>
-//       <div className=' h-full container mx-auto flex items-center px-4 justify-between'>
-//             <div className=''>
-//                 <Link to={"/"}>
-//                     <Logo w={90} h={50}/>
-//                 </Link>
-//             </div>
-
-//             <div className='hidden lg:flex items-center w-full justify-between max-w-sm border rounded-full focus-within:shadow pl-2'>
-//                 <input type='text' placeholder='search product here...' className='w-full outline-none' onChange={handleSearch} value={search}/>
-//                 <div className='text-lg min-w-[50px] h-8 bg-red-600 flex items-center justify-center rounded-r-full text-white'>
-//                   <GrSearch />
-//                 </div>
-//             </div>
-
-
-//             <div className='flex items-center gap-7'>
-                
-//                 <div className='relative flex justify-center'>
-
-//                   {
-//                     user?._id && (
-//                       <div className='text-3xl cursor-pointer relative flex justify-center' onClick={()=>setMenuDisplay(preve => !preve)}>
-//                         {
-//                           user?.profilePic ? (
-//                             <img src={user?.profilePic} className='w-10 h-10 rounded-full' alt={user?.name} />
-//                           ) : (
-//                             <FaRegCircleUser/>
-//                           )
-//                         }
-//                       </div>
-//                     )
-//                   }
-                  
-                  
-//                   {
-//                     menuDisplay && (
-//                       <div className='absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded' >
-//                         <nav>
-//                           {
-//                             user?.role === ROLE.ADMIN && (
-//                               <Link to={"/admin-panel/All-product"} className='whitespace-nowrap hidden md:block hover:bg-slate-100 p-2' onClick={()=>setMenuDisplay(preve => !preve)}>Admin Panel</Link>
-//                             )
-//                           }
-                         
-//                         </nav>
-//                       </div>
-//                     )
-//                   }
-                 
-//                 </div>
-
-//                   {
-//                      user?._id && (
-//                       <Link to={"/cart"} className='text-2xl relative'>
-//                           <span><FaShoppingCart/></span>
-      
-//                           <div className='bg-red-600 text-white w-5 h-5 rounded-full p-1 flex items-center justify-center absolute -top-2 -right-3'>
-//                               <p className='text-sm'>{context?.cartProductCount}</p>
-//                           </div>
-//                       </Link>
-//                       )
-//                   }
-              
-
-
-//                 <div>
-//                   {
-//                     user?._id  ? (
-//                       <button onClick={handleLogout} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Logout</button>
-//                     )
-//                     : (
-//                     <Link to={"/login"} className='px-3 py-1 rounded-full text-white bg-red-600 hover:bg-red-700'>Login</Link>
-//                     )
-//                   }
-                    
-//                 </div>
-
-//             </div>
-
-//       </div>
-//     </header>
-//   )
-// }
-
-// export default Header
