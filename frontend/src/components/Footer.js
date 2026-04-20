@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Logo from './Logo'
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
 import { motion } from 'framer-motion'
+import './Footer.css'
 
 const Footer = () => {
     const currentYear = new Date().getFullYear()
@@ -37,40 +38,40 @@ const Footer = () => {
     ]
 
     return (
-        <footer className='bg-slate-950 text-slate-300 pt-16 pb-8 border-t border-slate-900'>
-            <div className='container mx-auto px-6'>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16'>
+        <footer className='footer-container'>
+            <div className='footer-content'>
+                <div className='footer-grid'>
                     {/* Brand Section */}
-                    <div className='flex flex-col gap-6'>
-                        <Link to={"/"} className='flex items-center brightness-0 invert'>
-                            <Logo w={100} h={50} />
+                    <div className='footer-brand'>
+                        <Link to={"/"} className='brand-logo' style={{ filter: 'brightness(0) invert(1)' }}>
+                            <Logo w={120} h={60} />
                         </Link>
-                        <p className='text-sm leading-relaxed text-slate-400'>
-                            Elevate your shopping experience with Rakesh E-com. We provide high-quality products with seamless delivery and top-notch customer support.
+                        <p className='brand-description'>
+                            Experience excellence in every purchase. Rakesh E-com brings you curated products with a commitment to quality and seamless shopping.
                         </p>
-                        <div className='flex flex-col gap-3'>
-                            <div className='flex items-center gap-3 text-slate-400 hover:text-red-500 transition-colors cursor-pointer'>
+                        <div className='footer-contact-list'>
+                            <div className='contact-item'>
                                 <FaPhoneAlt size={14} />
-                                <span className='text-xs'>+91 98765 43210</span>
+                                <span>+91 98765 43210</span>
                             </div>
-                            <div className='flex items-center gap-3 text-slate-400 hover:text-red-500 transition-colors cursor-pointer'>
+                            <div className='contact-item'>
                                 <FaEnvelope size={14} />
-                                <span className='text-xs'>support@rakesh-ecom.com</span>
+                                <span>support@rakesh-ecom.com</span>
                             </div>
-                            <div className='flex items-center gap-3 text-slate-400'>
+                            <div className='contact-item'>
                                 <FaMapMarkerAlt size={14} />
-                                <span className='text-xs'>Mumbai, Maharashtra, India</span>
+                                <span>Mumbai, Maharashtra, India</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Shop Links */}
                     <div>
-                        <h4 className='text-white font-bold text-base mb-6 uppercase tracking-wider'>Shop</h4>
-                        <ul className='flex flex-col gap-3'>
+                        <h4 className='footer-title'>Catalog</h4>
+                        <ul className='footer-links'>
                             {footerLinks.shop.map((item, index) => (
                                 <li key={index}>
-                                    <Link to={item.link} className='text-sm hover:text-red-500 hover:pl-2 transition-all duration-300'>
+                                    <Link to={item.link} className='footer-link'>
                                         {item.name}
                                     </Link>
                                 </li>
@@ -80,11 +81,11 @@ const Footer = () => {
 
                     {/* Customer Care */}
                     <div>
-                        <h4 className='text-white font-bold text-base mb-6 uppercase tracking-wider'>Customer Care</h4>
-                        <ul className='flex flex-col gap-3'>
+                        <h4 className='footer-title'>Assistance</h4>
+                        <ul className='footer-links'>
                             {footerLinks.customerCare.map((item, index) => (
                                 <li key={index}>
-                                    <Link to={item.link} className='text-sm hover:text-red-500 hover:pl-2 transition-all duration-300'>
+                                    <Link to={item.link} className='footer-link'>
                                         {item.name}
                                     </Link>
                                 </li>
@@ -92,47 +93,45 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Newsletter */}
-                    <div>
-                        <h4 className='text-white font-bold text-base mb-6 uppercase tracking-wider'>Join Our Newsletter</h4>
-                        <p className='text-sm text-slate-400 mb-6'>
-                            Subscribe to receive updates, access to exclusive deals, and more.
+                    {/* Newsletter & Social */}
+                    <div className='newsletter-section'>
+                        <h4 className='footer-title' style={{ marginBottom: '1rem' }}>Newsletter</h4>
+                        <p className='newsletter-text'>
+                            Get exclusive access to new launches and seasonal offers.
                         </p>
-                        <div className='flex flex-col gap-3'>
-                            <div className='relative'>
-                                <input 
-                                    type='email' 
-                                    placeholder='Enter your email' 
-                                    className='w-full bg-slate-900 border border-slate-800 rounded-full py-3 px-6 text-sm outline-none focus:border-red-500 transition-colors'
-                                />
-                                <button className='absolute right-1 top-1 bottom-1 bg-red-600 hover:bg-red-700 text-white rounded-full px-5 text-sm font-bold transition-all'>
-                                    Join
-                                </button>
-                            </div>
-                            <div className='flex items-center gap-4 mt-4'>
-                                {socialLinks.map((social, index) => (
-                                    <motion.a
-                                        key={index}
-                                        href={social.link}
-                                        whileHover={{ scale: 1.2, color: "#f43f5e" }}
-                                        className='text-slate-400 text-lg transition-colors'
-                                    >
-                                        {social.icon}
-                                    </motion.a>
-                                ))}
-                            </div>
+                        <form className='newsletter-form' onSubmit={(e) => e.preventDefault()}>
+                            <input 
+                                type='email' 
+                                placeholder='Email address' 
+                                className='newsletter-input'
+                            />
+                            <button className='newsletter-button'>
+                                Join
+                            </button>
+                        </form>
+                        <div className='social-links'>
+                            {socialLinks.map((social, index) => (
+                                <motion.a
+                                    key={index}
+                                    href={social.link}
+                                    className='social-icon'
+                                    whileHover={{ y: -5 }}
+                                >
+                                    {social.icon}
+                                </motion.a>
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className='border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4'>
-                    <p className='text-xs text-slate-500'>
-                        © {currentYear} Rakesh E-com. All rights reserved.
+                <div className='bottom-bar'>
+                    <p className='copyright'>
+                        © {currentYear} Rakesh E-com. All rights reserved. Crafted with passion.
                     </p>
-                    <div className='flex items-center gap-8'>
+                    <div className='policy-links'>
                         {footerLinks.policy.map((item, index) => (
-                            <Link key={index} to={item.link} className='text-[10px] uppercase tracking-widest text-slate-500 hover:text-white transition-colors'>
+                            <Link key={index} to={item.link} className='policy-link'>
                                 {item.name}
                             </Link>
                         ))}
