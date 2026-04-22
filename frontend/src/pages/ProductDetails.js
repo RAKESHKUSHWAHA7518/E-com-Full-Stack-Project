@@ -1,10 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import  { useNavigate, useParams } from 'react-router-dom'
 import SummaryApi from '../common'
-import { FaStar } from "react-icons/fa";
-import { FaStarHalf } from "react-icons/fa";
 import displayINRCurrency from '../helpers/displayCurrency';
-import VerticalCardProduct from '../components/VerticalCardProduct';
 import addToCart from '../helpers/addToCart';
 import Context from '../context';
 import CategroyWiseProductDisplay from '../components/CategroyWiseProductDisplay';
@@ -37,7 +34,7 @@ const ProductDetails = () => {
 
   const navigate = useNavigate()
 
-  const fetchProductDetails = async()=>{
+  const fetchProductDetails = useCallback(async()=>{
     setLoading(true)
     const response = await fetch(SummaryApi.productDetails.url,{
       method : SummaryApi.productDetails.method,
@@ -57,13 +54,13 @@ const ProductDetails = () => {
       setActiveImage(dataReponse.data?.productImage[0])
     }
 
-  }
+  }, [params?.id])
 
   console.log("data",data)
 
   useEffect(()=>{
     fetchProductDetails()
-  },[params?.id])
+  },[fetchProductDetails])
 
   const handleMouseEnterProduct = (imageURL)=>{
     setActiveImage(imageURL)
@@ -81,7 +78,7 @@ const ProductDetails = () => {
       x,
       y
     })
-  },[zoomImageCoordinate])
+  },[])
 
   const handleLeaveImageZoom = ()=>{
     setZoomImage(false)
@@ -108,7 +105,13 @@ const ProductDetails = () => {
           <div className='h-96 flex flex-col lg:flex-row-reverse gap-4'>
 
               <div className='h-[300px] w-[300px] lg:h-96 lg:w-96 bg-slate-200 relative p-2'>
-                  <img src={activeImage} className='h-full w-full object-scale-down mix-blend-multiply' onMouseMove={handleZoomImage} onMouseLeave={handleLeaveImageZoom}/>
+                  <img
+                    src={activeImage}
+                    alt={data?.productName || 'Product'}
+                    className='h-full w-full object-scale-down mix-blend-multiply'
+                    onMouseMove={handleZoomImage}
+                    onMouseLeave={handleLeaveImageZoom}
+                  />
 
                     {/**product zoom */}
                     {
@@ -151,7 +154,13 @@ const ProductDetails = () => {
                           data?.productImage?.map((imgURL,index) =>{
                             return(
                               <div className='h-20 w-20 bg-slate-200 rounded p-1' key={imgURL}>
-                                <img src={imgURL} className='w-full h-full object-scale-down mix-blend-multiply cursor-pointer' onMouseEnter={()=>handleMouseEnterProduct(imgURL)}  onClick={()=>handleMouseEnterProduct(imgURL)}/>
+                                <img
+                                  src={imgURL}
+                                  alt={`${data?.productName || 'Product'} ${index + 1}`}
+                                  className='w-full h-full object-scale-down mix-blend-multiply cursor-pointer'
+                                  onMouseEnter={()=>handleMouseEnterProduct(imgURL)}
+                                  onClick={()=>handleMouseEnterProduct(imgURL)}
+                                />
                               </div>
                             )
                           })
@@ -167,7 +176,7 @@ const ProductDetails = () => {
             loading ? (
               <div className='grid gap-1 w-full'>
                 <p className='bg-slate-200 animate-pulse  h-6 lg:h-8 w-full rounded-full inline-block'></p>
-                <h2 className='text-2xl lg:text-4xl font-medium h-6 lg:h-8  bg-slate-200 animate-pulse w-full'></h2>
+                <div className='text-2xl lg:text-4xl font-medium h-6 lg:h-8  bg-slate-200 animate-pulse w-full'></div>
                 <p className='capitalize text-slate-400 bg-slate-200 min-w-[100px] animate-pulse h-6 lg:h-8  w-full'></p>
 
                 <div className='text-red-600 bg-slate-200 h-6 lg:h-8  animate-pulse flex items-center gap-1 w-full'>
