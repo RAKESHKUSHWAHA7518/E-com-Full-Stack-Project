@@ -40,98 +40,92 @@ const Footer = () => {
     return (
         <footer className='footer-container'>
             <div className='footer-content'>
-                <div className='footer-grid'>
+                <div className='footer-main-grid'>
                     {/* Brand Section */}
-                    <div className='footer-brand'>
-                        <Link to={"/"} className='brand-logo' style={{ filter: 'brightness(0) invert(1)' }}>
-                            <Logo w={120} h={60} />
+                    <div className='footer-brand-section'>
+                        <Link to={"/"} className='footer-logo-link'>
+                            <Logo w={140} h={70} />
                         </Link>
-                        <p className='brand-description'>
-                            Experience excellence in every purchase. Rakesh E-com brings you curated products with a commitment to quality and seamless shopping.
+                        <p className='brand-tagline'>
+                            Experience premium shopping with curated collections. Quality and style delivered to your doorstep.
                         </p>
-                        <div className='footer-contact-list'>
-                            <div className='contact-item'>
-                                <FaPhoneAlt size={14} />
-                                <span>+91 98765 43210</span>
-                            </div>
-                            <div className='contact-item'>
-                                <FaEnvelope size={14} />
-                                <span>support@rakesh-ecom.com</span>
-                            </div>
-                            <div className='contact-item'>
-                                <FaMapMarkerAlt size={14} />
-                                <span>Mumbai, Maharashtra, India</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Shop Links */}
-                    <div>
-                        <h4 className='footer-title'>Catalog</h4>
-                        <ul className='footer-links'>
-                            {footerLinks.shop.map((item, index) => (
-                                <li key={index}>
-                                    <Link to={item.link} className='footer-link'>
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Customer Care */}
-                    <div>
-                        <h4 className='footer-title'>Assistance</h4>
-                        <ul className='footer-links'>
-                            {footerLinks.customerCare.map((item, index) => (
-                                <li key={index}>
-                                    <Link to={item.link} className='footer-link'>
-                                        {item.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Newsletter & Social */}
-                    <div className='newsletter-section'>
-                        <h4 className='footer-title' style={{ marginBottom: '1rem' }}>Newsletter</h4>
-                        <p className='newsletter-text'>
-                            Get exclusive access to new launches and seasonal offers.
-                        </p>
-                        <form className='newsletter-form' onSubmit={(e) => e.preventDefault()}>
-                            <input 
-                                type='email' 
-                                placeholder='Email address' 
-                                className='newsletter-input'
-                            />
-                            <button className='newsletter-button'>
-                                Join
-                            </button>
-                        </form>
-                        <div className='social-links'>
+                        <div className='social-icons-row'>
                             {socialLinks.map((social, index) => (
                                 <motion.a
                                     key={index}
                                     href={social.link}
-                                    className='social-icon'
-                                    whileHover={{ y: -5 }}
+                                    className='social-pill'
+                                    whileHover={{ y: -5, scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
                                 >
                                     {social.icon}
                                 </motion.a>
                             ))}
                         </div>
                     </div>
+
+                    {/* Quick Links */}
+                    <div className='footer-nav-col'>
+                        <h4 className='nav-title'>Shop</h4>
+                        <ul className='nav-list'>
+                            {footerLinks.shop.map((item, index) => (
+                                <li key={index}>
+                                    <Link to={item.link} className='nav-link-item'>
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className='footer-nav-col'>
+                        <h4 className='nav-title'>Support</h4>
+                        <ul className='nav-list'>
+                            {footerLinks.customerCare.map((item, index) => (
+                                <li key={index}>
+                                    <Link to={item.link} className='nav-link-item'>
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Newsletter Section */}
+                    <div className='footer-newsletter-col'>
+                        <h4 className='nav-title'>Newsletter</h4>
+                        <p className='newsletter-subtext'>Subscribe to get special offers and once-in-a-lifetime deals.</p>
+                        <form className='newsletter-form-simple' onSubmit={(e) => e.preventDefault()}>
+                            <input 
+                                type='email' 
+                                placeholder='Email address' 
+                                className='newsletter-input-simple'
+                            />
+                            <button className='newsletter-btn-simple'>
+                                Join
+                            </button>
+                        </form>
+                        <div className='contact-quick-list'>
+                            <div className='contact-quick-item'>
+                                <FaPhoneAlt size={12} />
+                                <span>+91 98765 43210</span>
+                            </div>
+                            <div className='contact-quick-item'>
+                                <FaEnvelope size={12} />
+                                <span>support@rakesh.com</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className='bottom-bar'>
-                    <p className='copyright'>
-                        © {currentYear} Rakesh E-com. All rights reserved. Crafted with passion.
-                    </p>
-                    <div className='policy-links'>
+                <div className='footer-bottom-bar'>
+                    <div className='bottom-copyright'>
+                        © {currentYear} Rakesh E-com. All rights reserved.
+                    </div>
+                    <div className='bottom-links'>
                         {footerLinks.policy.map((item, index) => (
-                            <Link key={index} to={item.link} className='policy-link'>
+                            <Link key={index} to={item.link} className='bottom-link'>
                                 {item.name}
                             </Link>
                         ))}
