@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
-import { FaTimes, FaSpinner } from 'react-icons/fa'
+import { FaTimes, FaSpinner, FaMapMarkerAlt } from 'react-icons/fa'
 import { addAddress, updateAddress } from '../../store/addressSlice'
 
 const EMPTY_FORM = {
@@ -38,11 +39,11 @@ const validate = (data) => {
 }
 
 const Field = ({ label, name, value, onChange, error, placeholder, required, optional }) => (
-  <div>
-    <label htmlFor={name} className='block text-sm font-medium text-gray-700 mb-1'>
+  <div className='space-y-1'>
+    <label htmlFor={name} className='block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1'>
       {label}
-      {required && <span className='text-red-500 ml-0.5'>*</span>}
-      {optional && <span className='text-gray-400 text-xs ml-1'>(optional)</span>}
+      {required && <span className='text-rose-500 ml-0.5'>*</span>}
+      {optional && <span className='text-slate-300 text-[10px] ml-1'>(optional)</span>}
     </label>
     <input
       id={name}
@@ -51,11 +52,11 @@ const Field = ({ label, name, value, onChange, error, placeholder, required, opt
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`w-full border rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-400 transition ${
-        error ? 'border-red-500' : 'border-gray-300'
+      className={`w-full bg-slate-50 border-2 rounded-xl px-4 py-2.5 text-sm text-slate-700 outline-none transition-all duration-200 focus:bg-white focus:shadow-lg focus:shadow-indigo-500/5 ${
+        error ? 'border-rose-200 focus:border-rose-400' : 'border-slate-100 focus:border-indigo-300'
       }`}
     />
-    {error && <p className='mt-1 text-xs text-red-500'>{error}</p>}
+    {error && <p className='mt-1 text-[10px] text-rose-500 font-bold ml-1'>{error}</p>}
   </div>
 )
 
@@ -67,7 +68,6 @@ const AddressFormModal = ({ isOpen, onClose, address }) => {
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
 
-  // Populate form when editing
   useEffect(() => {
     if (isOpen) {
       if (address) {
@@ -122,7 +122,6 @@ const AddressFormModal = ({ isOpen, onClose, address }) => {
         result = await dispatch(addAddress(formData))
       }
 
-      // Check if the thunk was rejected
       if (result.type?.endsWith('/rejected')) {
         toast.error(result.payload || 'Failed to save address')
       } else {
@@ -137,132 +136,148 @@ const AddressFormModal = ({ isOpen, onClose, address }) => {
   }
 
   return (
-    <div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'
-      onClick={handleOverlayClick}
-    >
-      <div className='bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto'>
-        {/* Header */}
-        <div className='flex items-center justify-between px-6 py-4 border-b border-gray-200'>
-          <h2 className='text-lg font-semibold text-gray-800'>
-            {isEditMode ? 'Edit Address' : 'Add New Address'}
-          </h2>
-          <button
-            onClick={onClose}
-            className='text-gray-400 hover:text-gray-600 transition'
-            aria-label='Close modal'
-          >
-            <FaTimes className='text-xl' />
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className='px-6 py-5 space-y-4'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            <Field
-              label='Full Name'
-              name='fullName'
-              value={formData.fullName}
-              onChange={handleChange}
-              error={errors.fullName}
-              placeholder='John Doe'
-              required
-            />
-            <Field
-              label='Phone'
-              name='phone'
-              value={formData.phone}
-              onChange={handleChange}
-              error={errors.phone}
-              placeholder='+1234567890'
-              required
-            />
-          </div>
-
-          <Field
-            label='Address Line 1'
-            name='addressLine1'
-            value={formData.addressLine1}
-            onChange={handleChange}
-            error={errors.addressLine1}
-            placeholder='123 Main Street'
-            required
-          />
-
-          <Field
-            label='Address Line 2'
-            name='addressLine2'
-            value={formData.addressLine2}
-            onChange={handleChange}
-            error={errors.addressLine2}
-            placeholder='Apt, Suite, Floor...'
-            optional
-          />
-
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            <Field
-              label='City'
-              name='city'
-              value={formData.city}
-              onChange={handleChange}
-              error={errors.city}
-              placeholder='New York'
-              required
-            />
-            <Field
-              label='State / Province'
-              name='state'
-              value={formData.state}
-              onChange={handleChange}
-              error={errors.state}
-              placeholder='NY'
-              required
-            />
-          </div>
-
-          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-            <Field
-              label='Postal Code'
-              name='postalCode'
-              value={formData.postalCode}
-              onChange={handleChange}
-              error={errors.postalCode}
-              placeholder='10001'
-              required
-            />
-            <Field
-              label='Country'
-              name='country'
-              value={formData.country}
-              onChange={handleChange}
-              error={errors.country}
-              placeholder='United States'
-              required
-            />
-          </div>
-
-          {/* Actions */}
-          <div className='flex justify-end gap-3 pt-2'>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className='fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4'
+        onClick={handleOverlayClick}
+      >
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          className='bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col'
+        >
+          {/* Header */}
+          <div className='flex items-center justify-between px-8 py-6 border-b border-slate-100'>
+            <div className='flex items-center gap-3'>
+              <div className='w-10 h-10 premium-gradient rounded-xl flex items-center justify-center text-white shadow-lg'>
+                <FaMapMarkerAlt />
+              </div>
+              <h2 className='text-xl font-bold text-slate-800 tracking-tight'>
+                {isEditMode ? 'Edit Address' : 'New Address'}
+              </h2>
+            </div>
             <button
-              type='button'
               onClick={onClose}
-              className='px-5 py-2 rounded-full border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition'
+              className='w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all'
+              aria-label='Close modal'
             >
-              Cancel
-            </button>
-            <button
-              type='submit'
-              disabled={loading}
-              className='flex items-center gap-2 px-5 py-2 rounded-full bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white text-sm font-medium transition'
-            >
-              {loading && <FaSpinner className='animate-spin' />}
-              {loading ? 'Saving...' : isEditMode ? 'Update Address' : 'Add Address'}
+              <FaTimes className='text-lg' />
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className='px-8 py-6 space-y-5 overflow-y-auto'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+              <Field
+                label='Full Name'
+                name='fullName'
+                value={formData.fullName}
+                onChange={handleChange}
+                error={errors.fullName}
+                placeholder='John Doe'
+                required
+              />
+              <Field
+                label='Phone'
+                name='phone'
+                value={formData.phone}
+                onChange={handleChange}
+                error={errors.phone}
+                placeholder='+1 234 567 8900'
+                required
+              />
+            </div>
+
+            <Field
+              label='Address Line 1'
+              name='addressLine1'
+              value={formData.addressLine1}
+              onChange={handleChange}
+              error={errors.addressLine1}
+              placeholder='123 Main Street'
+              required
+            />
+
+            <Field
+              label='Address Line 2'
+              name='addressLine2'
+              value={formData.addressLine2}
+              onChange={handleChange}
+              error={errors.addressLine2}
+              placeholder='Apt, Suite, Floor (optional)'
+              optional
+            />
+
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+              <Field
+                label='City'
+                name='city'
+                value={formData.city}
+                onChange={handleChange}
+                error={errors.city}
+                placeholder='New York'
+                required
+              />
+              <Field
+                label='State / Province'
+                name='state'
+                value={formData.state}
+                onChange={handleChange}
+                error={errors.state}
+                placeholder='NY'
+                required
+              />
+            </div>
+
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-5'>
+              <Field
+                label='Postal Code'
+                name='postalCode'
+                value={formData.postalCode}
+                onChange={handleChange}
+                error={errors.postalCode}
+                placeholder='10001'
+                required
+              />
+              <Field
+                label='Country'
+                name='country'
+                value={formData.country}
+                onChange={handleChange}
+                error={errors.country}
+                placeholder='United States'
+                required
+              />
+            </div>
+
+            {/* Actions */}
+            <div className='flex items-center gap-4 pt-4'>
+              <button
+                type='button'
+                onClick={onClose}
+                className='flex-1 py-3.5 rounded-2xl border-2 border-slate-100 text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all uppercase tracking-widest'
+              >
+                Cancel
+              </button>
+              <button
+                type='submit'
+                disabled={loading}
+                className='flex-[2] flex items-center justify-center gap-3 py-3.5 rounded-2xl premium-gradient text-white text-sm font-bold shadow-xl hover:shadow-indigo-500/30 disabled:opacity-60 transition-all uppercase tracking-widest'
+              >
+                {loading && <FaSpinner className='animate-spin' />}
+                <span>{loading ? 'Saving...' : isEditMode ? 'Update Address' : 'Save Address'}</span>
+              </button>
+            </div>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
 export default AddressFormModal
+

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa'
-import { MdLocationOn } from 'react-icons/md'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FaEdit, FaTrash, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa'
+import { MdPhone } from 'react-icons/md'
 
 const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -19,79 +20,114 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }) => {
   }
 
   return (
-    <div className={`relative bg-white rounded-lg border p-4 shadow-sm transition ${address.isDefault ? 'border-green-400' : 'border-gray-200'}`}>
+    <motion.div 
+      layout
+      whileHover={{ y: -5 }}
+      className={`relative glass rounded-2xl p-6 shadow-xl transition-all duration-300 border-2 ${
+        address.isDefault ? 'border-indigo-400 bg-white bg-opacity-90' : 'border-white border-opacity-40'
+      }`}
+    >
       {/* Default badge */}
-      {address.isDefault && (
-        <span className='absolute top-3 right-3 flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full'>
-          <FaCheckCircle className='text-green-500' />
-          Default
-        </span>
-      )}
+      <AnimatePresence>
+        {address.isDefault && (
+          <motion.span 
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className='absolute -top-3 -right-3 flex items-center gap-1.5 premium-gradient text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg uppercase tracking-wider'
+          >
+            <FaCheckCircle className='text-xs' />
+            Default
+          </motion.span>
+        )}
+      </AnimatePresence>
 
       {/* Address details */}
-      <div className='flex items-start gap-2 mb-3'>
-        <MdLocationOn className='text-red-500 text-xl mt-0.5 flex-shrink-0' />
-        <div className='text-sm text-gray-700 space-y-0.5'>
-          <p className='font-semibold text-gray-900'>{address.fullName}</p>
-          <p>{address.phone}</p>
-          <p>{address.addressLine1}</p>
-          {address.addressLine2 && <p>{address.addressLine2}</p>}
-          <p>{address.city}, {address.state} {address.postalCode}</p>
-          <p>{address.country}</p>
+      <div className='flex items-start gap-4 mb-4'>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner ${
+          address.isDefault ? 'bg-indigo-50 text-indigo-500' : 'bg-slate-50 text-slate-400'
+        }`}>
+          <FaMapMarkerAlt className='text-xl' />
+        </div>
+        
+        <div className='flex-1 space-y-1'>
+          <p className='font-bold text-slate-800 text-lg leading-tight'>{address.fullName}</p>
+          <div className='flex items-center gap-2 text-slate-500 text-sm'>
+            <MdPhone className='text-indigo-400' />
+            <p className='font-medium'>{address.phone}</p>
+          </div>
+          <div className='mt-3 pt-3 border-t border-slate-100'>
+            <p className='text-slate-600 text-sm leading-relaxed'>{address.addressLine1}</p>
+            {address.addressLine2 && <p className='text-slate-600 text-sm leading-relaxed'>{address.addressLine2}</p>}
+            <p className='text-slate-700 font-semibold text-sm mt-1'>
+              {address.city}, {address.state} {address.postalCode}
+            </p>
+            <p className='text-slate-400 text-xs font-bold uppercase tracking-widest mt-1'>{address.country}</p>
+          </div>
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className='flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-gray-100'>
-        {/* Edit */}
-        <button
-          onClick={() => onEdit(address)}
-          className='flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium transition'
-        >
-          <FaEdit />
-          Edit
-        </button>
-
-        {/* Set as Default — hidden if already default */}
-        {!address.isDefault && (
+      <div className='flex items-center justify-between mt-4 pt-4 border-t border-slate-100'>
+        <div className='flex items-center gap-4'>
           <button
-            onClick={() => onSetDefault(address._id)}
-            className='flex items-center gap-1 text-xs text-green-600 hover:text-green-800 font-medium transition'
+            onClick={() => onEdit(address)}
+            className='flex items-center gap-2 text-xs font-bold text-indigo-500 hover:text-indigo-700 transition-colors uppercase tracking-widest'
           >
-            <FaCheckCircle />
-            Set as Default
+            <FaEdit className='text-sm' />
+            Edit
           </button>
-        )}
 
-        {/* Delete with inline confirmation */}
-        {!confirmDelete ? (
-          <button
-            onClick={handleDeleteClick}
-            className='flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-medium transition ml-auto'
-          >
-            <FaTrash />
-            Delete
-          </button>
-        ) : (
-          <div className='flex items-center gap-2 ml-auto'>
-            <span className='text-xs text-gray-600 font-medium'>Are you sure?</span>
+          {!address.isDefault && (
             <button
-              onClick={handleConfirmDelete}
-              className='text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-0.5 rounded transition'
+              onClick={() => onSetDefault(address._id)}
+              className='flex items-center gap-2 text-xs font-bold text-emerald-500 hover:text-emerald-700 transition-colors uppercase tracking-widest'
             >
-              Confirm
+              <FaCheckCircle className='text-sm' />
+              Set Default
             </button>
-            <button
-              onClick={handleCancelDelete}
-              className='text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-0.5 rounded transition'
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+          )}
+        </div>
+
+        <div className='flex items-center gap-2'>
+          <AnimatePresence mode='wait'>
+            {!confirmDelete ? (
+              <motion.button
+                key="delete-btn"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={handleDeleteClick}
+                className='w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all'
+              >
+                <FaTrash />
+              </motion.button>
+            ) : (
+              <motion.div 
+                key="confirm-delete"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className='flex items-center gap-2 bg-rose-50 p-1 rounded-lg'
+              >
+                <button
+                  onClick={handleConfirmDelete}
+                  className='text-[10px] font-bold bg-rose-500 text-white px-2 py-1 rounded uppercase tracking-wider'
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={handleCancelDelete}
+                  className='text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-1 rounded uppercase tracking-wider'
+                >
+                  No
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 export default AddressCard
+

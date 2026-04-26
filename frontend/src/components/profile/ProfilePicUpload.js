@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FaUserCircle, FaCamera, FaSpinner } from 'react-icons/fa'
 import SummaryApi from '../../common'
 import { setUserDetails } from '../../store/userSlice'
@@ -25,16 +26,13 @@ const ProfilePicUpload = () => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Reset input so the same file can be re-selected if needed
     e.target.value = ''
 
-    // Validate type
     if (!ACCEPTED_TYPES.includes(file.type)) {
       toast.error('Only JPEG, PNG, and WebP images are supported.')
       return
     }
 
-    // Validate size (≤ 2 MB)
     const sizeMB = file.size / (1024 * 1024)
     if (sizeMB > MAX_FILE_SIZE_MB) {
       toast.error(`Image must be ${MAX_FILE_SIZE_MB} MB or smaller.`)
@@ -43,7 +41,6 @@ const ProfilePicUpload = () => {
 
     setUploading(true)
     try {
-      // Upload to Cloudinary via existing helper
       const cloudinaryResponse = await uploadimage(file)
 
       if (!cloudinaryResponse?.secure_url) {
@@ -52,7 +49,6 @@ const ProfilePicUpload = () => {
 
       const profilePicUrl = cloudinaryResponse.secure_url
 
-      // Persist URL to backend
       const response = await fetch(SummaryApi.uploadProfilePic.url, {
         method: SummaryApi.uploadProfilePic.method,
         credentials: 'include',
@@ -76,43 +72,60 @@ const ProfilePicUpload = () => {
   }
 
   return (
-    <div className='flex flex-col items-center gap-3'>
-      {/* Avatar with upload overlay */}
-      <div
-        className='relative w-28 h-28 cursor-pointer group'
+    <div className='flex flex-col items-center gap-4'>
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className='relative cursor-pointer'
         onClick={handleAvatarClick}
-        title='Click to change profile picture'
       >
-        {user?.profilePic ? (
-          <img
-            src={user.profilePic}
-            alt={user.name || 'Profile'}
-            className='w-28 h-28 rounded-full object-cover border-4 border-white shadow-md'
-          />
-        ) : (
-          <FaUserCircle className='w-28 h-28 text-gray-400' />
-        )}
-
-        {/* Hover / loading overlay */}
-        <div className='absolute inset-0 rounded-full bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
-          {uploading ? (
-            <FaSpinner className='text-white text-2xl animate-spin' />
+        {/* Glowing Background Ring */}
+        <div className='absolute -inset-1 premium-gradient rounded-full blur opacity-40 group-hover:opacity-75 transition duration-1000 group-hover:duration-200 animate-pulse'></div>
+        
+        <div className='relative w-32 h-32 lg:w-40 lg:h-40 rounded-full overflow-hidden border-4 border-white shadow-2xl bg-white'>
+          {user?.profilePic ? (
+            <img
+              src={user.profilePic}
+              alt={user.name || 'Profile'}
+              className='w-full h-full object-cover transition-transform duration-500 hover:scale-110'
+            />
           ) : (
-            <FaCamera className='text-white text-2xl' />
+            <div className='w-full h-full bg-slate-100 flex items-center justify-center'>
+              <FaUserCircle className='w-24 h-24 text-slate-300' />
+            </div>
+          )}
+
+          {/* Upload Overlay */}
+          <AnimatePresence>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileHover={{ opacity: 1 }}
+              className='absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white transition-all duration-300 backdrop-blur-[2px]'
+            >
+              {uploading ? (
+                <FaSpinner className='text-3xl animate-spin' />
+              ) : (
+                <>
+                  <FaCamera className='text-3xl mb-1' />
+                  <span className='text-[10px] font-bold uppercase tracking-wider'>Change Photo</span>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Loading Spinner for Uploading State */}
+          {uploading && (
+            <div className='absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center'>
+              <FaSpinner className='text-white text-3xl animate-spin' />
+            </div>
           )}
         </div>
+      </motion.div>
 
-        {/* Always-visible spinner when uploading */}
-        {uploading && (
-          <div className='absolute inset-0 rounded-full bg-black bg-opacity-50 flex items-center justify-center'>
-            <FaSpinner className='text-white text-2xl animate-spin' />
-          </div>
-        )}
+      <div className='text-center'>
+        <p className='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>JPEG, PNG or WebP · Max 2 MB</p>
       </div>
 
-      <p className='text-xs text-gray-500'>JPEG, PNG or WebP · max 2 MB</p>
-
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type='file'
@@ -125,3 +138,4 @@ const ProfilePicUpload = () => {
 }
 
 export default ProfilePicUpload
+

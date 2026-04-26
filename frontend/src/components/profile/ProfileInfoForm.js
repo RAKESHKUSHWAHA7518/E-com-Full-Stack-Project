@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { motion } from 'framer-motion'
 import { toast } from 'react-toastify'
-import { FaSpinner } from 'react-icons/fa'
+import { FaSpinner, FaUser, FaPhoneAlt } from 'react-icons/fa'
 import SummaryApi from '../../common'
 import { setUserDetails } from '../../store/userSlice'
 
@@ -39,7 +40,6 @@ const ProfileInfoForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    // Clear error on change
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
@@ -67,7 +67,7 @@ const ProfileInfoForm = () => {
 
       if (data.success) {
         dispatch(setUserDetails(data.data))
-        toast.success('Profile updated')
+        toast.success('Profile updated successfully')
       } else {
         toast.error(data.message || 'Failed to update profile')
       }
@@ -79,62 +79,88 @@ const ProfileInfoForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='bg-white rounded-lg shadow p-6 space-y-5'>
-      <h2 className='text-xl font-semibold text-gray-800'>Profile Information</h2>
-
-      {/* Name field */}
-      <div>
-        <label htmlFor='name' className='block text-sm font-medium text-gray-700 mb-1'>
-          Full Name <span className='text-red-500'>*</span>
-        </label>
-        <input
-          id='name'
-          name='name'
-          type='text'
-          value={formData.name}
-          onChange={handleChange}
-          placeholder='Enter your full name'
-          className={`w-full border rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-400 transition ${
-            errors.name ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {errors.name && (
-          <p className='mt-1 text-xs text-red-500'>{errors.name}</p>
-        )}
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className='glass rounded-3xl p-8 shadow-2xl border-white border-opacity-40'
+    >
+      <div className='flex items-center gap-3 mb-8'>
+        <div className='w-10 h-10 premium-gradient rounded-xl flex items-center justify-center text-white shadow-lg'>
+          <FaUser />
+        </div>
+        <h2 className='text-2xl font-bold text-slate-800 tracking-tight'>Personal Information</h2>
       </div>
 
-      {/* Phone field */}
-      <div>
-        <label htmlFor='phone' className='block text-sm font-medium text-gray-700 mb-1'>
-          Phone Number
-        </label>
-        <input
-          id='phone'
-          name='phone'
-          type='text'
-          value={formData.phone}
-          onChange={handleChange}
-          placeholder='+1234567890 (optional)'
-          className={`w-full border rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-400 transition ${
-            errors.phone ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        {errors.phone && (
-          <p className='mt-1 text-xs text-red-500'>{errors.phone}</p>
-        )}
-      </div>
+      <form onSubmit={handleSubmit} className='space-y-6'>
+        {/* Name field */}
+        <div className='space-y-2'>
+          <label htmlFor='name' className='block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1'>
+            Full Name <span className='text-rose-500'>*</span>
+          </label>
+          <div className='relative group'>
+            <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+              <FaUser className={`transition-colors duration-200 ${errors.name ? 'text-rose-400' : 'text-slate-400 group-focus-within:text-indigo-500'}`} />
+            </div>
+            <input
+              id='name'
+              name='name'
+              type='text'
+              value={formData.name}
+              onChange={handleChange}
+              placeholder='Enter your full name'
+              className={`w-full bg-white bg-opacity-50 border-2 rounded-2xl pl-11 pr-4 py-3.5 text-slate-700 outline-none transition-all duration-300 focus:bg-white focus:shadow-xl focus:shadow-indigo-500/10 ${
+                errors.name ? 'border-rose-200 focus:border-rose-400' : 'border-slate-100 focus:border-indigo-400'
+              }`}
+            />
+          </div>
+          {errors.name && (
+            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className='text-xs text-rose-500 font-medium ml-1'>{errors.name}</motion.p>
+          )}
+        </div>
 
-      {/* Submit button */}
-      <button
-        type='submit'
-        disabled={loading}
-        className='flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-medium px-6 py-2 rounded-full transition'
-      >
-        {loading && <FaSpinner className='animate-spin' />}
-        {loading ? 'Saving...' : 'Save Changes'}
-      </button>
-    </form>
+        {/* Phone field */}
+        <div className='space-y-2'>
+          <label htmlFor='phone' className='block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1'>
+            Phone Number
+          </label>
+          <div className='relative group'>
+            <div className='absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'>
+              <FaPhoneAlt className={`transition-colors duration-200 ${errors.phone ? 'text-rose-400' : 'text-slate-400 group-focus-within:text-indigo-500'}`} />
+            </div>
+            <input
+              id='phone'
+              name='phone'
+              type='text'
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder='+1 234 567 8900'
+              className={`w-full bg-white bg-opacity-50 border-2 rounded-2xl pl-11 pr-4 py-3.5 text-slate-700 outline-none transition-all duration-300 focus:bg-white focus:shadow-xl focus:shadow-indigo-500/10 ${
+                errors.phone ? 'border-rose-200 focus:border-rose-400' : 'border-slate-100 focus:border-indigo-400'
+              }`}
+            />
+          </div>
+          {errors.phone && (
+            <motion.p initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className='text-xs text-rose-500 font-medium ml-1'>{errors.phone}</motion.p>
+          )}
+        </div>
+
+        {/* Submit button */}
+        <div className='pt-4'>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type='submit'
+            disabled={loading}
+            className='w-full premium-gradient hover:shadow-2xl hover:shadow-indigo-500/30 disabled:opacity-70 text-white font-bold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-xl'
+          >
+            {loading ? <FaSpinner className='animate-spin text-xl' /> : null}
+            <span className='tracking-wide'>{loading ? 'Updating Profile...' : 'Save Changes'}</span>
+          </motion.button>
+        </div>
+      </form>
+    </motion.div>
   )
 }
 
 export default ProfileInfoForm
+
